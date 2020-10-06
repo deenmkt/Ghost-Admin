@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "ember serve",
-    "build": "ember build",
+    "build": "ember build --environment=production",
     "test": "ember exam --split 2 --parallel",
     "lint:js": "eslint ."
   },
