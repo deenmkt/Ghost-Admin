@@ -207,6 +207,28 @@ export default Component.extend(SettingsMenuMixin, {
             }
         },
 
+        //implementacao manual de update
+
+        setUpdatedAtBlogDate(date) {
+            let post = this.post;
+            let dateString = moment(date).format('YYYY-MM-DD');
+
+            post.get('errors').remove('updatedAtBlogDate');
+
+            post.set('updatedAtBlogDate', dateString);
+            return this.savePost.perform();
+        },
+
+        setUpdatedAtBlogTime(time) {
+            let post = this.post;
+            post.get('errors').remove('updatedAtBlogTime');
+
+            post.set('updatedAtBlogTime', time);
+            return this.savePost.perform();
+        },
+
+        //final implementacao manual
+
         setCustomExcerpt(excerpt) {
             let post = this.post;
             let currentExcerpt = post.get('customExcerpt');

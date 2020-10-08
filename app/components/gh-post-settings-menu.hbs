@@ -67,23 +67,32 @@
                     <p>Use the publish menu to re-schedule</p>
                     {{/unless}}
                 </div>
-
-                {{#unless this.session.user.isContributor}}
                 <div class="form-group">
-                    <label for="tag-input">Tags</label>
-                    <GhPsmTagsInput @post={{this.post}} @triggerId="tag-input" />
+                    <label>Updated date</label>
+                    <GhDateTimePicker
+                        @date={{this.post.updatedAtBlogDate}}
+                        @time={{this.post.updatedAtBlogTime}}
+                        @setDate={{action "setUpdatedAtBlogDate"}}
+                        @setTime={{action "setUpdatedAtBlogTime"}}
+                        @errors={{this.post.errors}}
+                        @dateErrorProperty="updatedAtBlogDate"
+                        @timeErrorProperty="updatedAtBlogTime"
+                        @disabled={{this.post.isScheduled}}
+                        @isActive={{and this.showSettingsMenu (not this.isViewingSubview)}}
+                    />
                 </div>
+                {{#unless this.session.user.isContributor}}
+                    <div class="form-group">
+                        <label for="tag-input">Tags</label>
+                        <GhPsmTagsInput @post={{this.post}} @triggerId="tag-input" />
+                    </div>
                 {{/unless}}
-
-
                 {{#if (and this.feature.members this.showVisibilityInput)}}
                     <div class="form-group">
                         <label for="visibility-input">Post access</label>
                         <GhPsmVisibilityInput @post={{this.post}} @triggerId="visibility-input" />
                     </div>
                 {{/if}}
-
-
                 <GhFormGroup @errors={{this.post.errors}} @hasValidated={{this.post.hasValidated}} @property="customExcerpt">
                     <label for="custom-excerpt">Excerpt</label>
                     <GhTextarea

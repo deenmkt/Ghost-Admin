@@ -131,6 +131,9 @@ export default Model.extend(Comparable, ValidationEngine, {
     publishedAtBlogDate: '',
     publishedAtBlogTime: '',
 
+    updatedAtBlogDate: '',
+    updatedAtBlogTime: '',
+
     canonicalUrlScratch: boundOneWay('canonicalUrl'),
     customExcerptScratch: boundOneWay('customExcerpt'),
     codeinjectionFootScratch: boundOneWay('codeinjectionFoot'),
@@ -245,6 +248,61 @@ export default Model.extend(Comparable, ValidationEngine, {
         }
     },
 
+
+    /*updatedAtBlogTZ: computed('updatedAtBlogDate', 'updatedAtBlogTime', 'settings.timezone', {
+        get() {
+            return this._getUpdatedAtBlogTZ();
+        },
+        set(key, value) {
+            let momentValue = value ? moment(value) : null;
+            this._setUpdatedAtBlogStrings(momentValue);
+            return this._getUpdatedAtBlogTZ();
+        }
+    }),
+
+    _getUpdatedAtBlogTZ() {
+        let updatedAtUTC = this.updatedAtUTC;
+        let updatedAtBlogDate = this.updatedAtBlogDate;
+        let updatedAtBlogTime = this.updatedAtBlogTime;
+        let blogTimezone = this.get('settings.timezone');
+
+        if (!publishedAtUTC && isBlank(updatedAtBlogDate) && isBlank(updatedAtBlogTime)) {
+            return null;
+        }
+
+        if (updatedAtBlogDate && updatedAtBlogTime) {
+            let updatedAtBlog = moment.tz(`${updatedAtBlogDate} ${updatedAtBlogTime}`, blogTimezone);
+
+            if (updatedAtUTC && updatedAtBlog.diff(updatedAtUTC.clone().startOf('minutes')) === 0) {
+                return updatedAtUTC;
+            }
+
+            return updatedAtBlog;
+        } else {
+            return moment.tz(this.updatedAtUTC, blogTimezone);
+        }
+    },
+
+    // TODO: is there a better way to handle this?
+    // eslint-disable-next-line ghost/ember/no-observers
+    _setUpdatedAtBlogTZ: on('init', observer('updatedAtUTC', 'settings.timezone', function () {
+        let updatedAtUTC = this.updatedAtUTC;
+        this._setUpdatedAtBlogStrings(updatedAtUTC);
+    })),
+
+    _setUpdatedAtBlogStrings(momentDate) {
+        if (momentDate) {
+            let blogTimezone = this.get('settings.timezone');
+            let updatedAtBlog = moment.tz(momentDate, blogTimezone);
+
+            this.set('updatedAtBlogDate', updatedAtBlog.format('YYYY-MM-DD'));
+            this.set('updatedAtBlogTime', updatedAtBlog.format('HH:mm'));
+        } else {
+            this.set('updatedAtBlogDate', '');
+            this.set('updatedAtBlogTime', '');
+        }
+    },*/
+
     // remove client-generated tags, which have `id: null`.
     // Ember Data won't recognize/update them automatically
     // when returned from the server with ids.
@@ -314,6 +372,10 @@ export default Model.extend(Comparable, ValidationEngine, {
     beforeSave() {
         let publishedAtBlogTZ = this.publishedAtBlogTZ;
         let publishedAtUTC = publishedAtBlogTZ ? publishedAtBlogTZ.utc() : null;
+        let blogTimezone = this.get('settings.timezone');
+        const date = moment.tz(`${this.updatedAtBlogDate} ${this.updatedAtBlogTime}`, blogTimezone).utc();
         this.set('publishedAtUTC', publishedAtUTC);
+        this.set('updatedAtUTC', date);
+        console.log(date);
     }
 });
